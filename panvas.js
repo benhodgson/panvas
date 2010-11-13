@@ -1,7 +1,7 @@
 (function(window, undefined) {
   
   var G = -400, // px/sec^2
-      maxParticles = 50;
+      maxParticles = 500;
   
   var document = window.document,
       ctx,
@@ -20,6 +20,7 @@
     this.y = originY;
     this.dx = 0; // pixels per second
     this.dy = 0; // pixels per second
+    this.bounces = 0;
   };
   
   Particle.prototype.draw = function(ctx) {
@@ -37,6 +38,26 @@
     this.dy -= dG;
     this.x += dx;
     this.y += dy;
+    
+    if (this.y > canvasHeight) {
+        this.bounces++;
+        this.y = canvasHeight;
+        this.dy = this.dy * -0.9;
+    } else if (this.y < 0) {
+        this.bounces++;
+        this.y = 0;
+        this.dy = this.dy * -0.9;
+    }
+    
+    if (this.x > canvasWidth) {
+        this.bounces++;
+        this.x = canvasWidth;
+        this.dx = this.dx * -0.9;
+    } else if (this.x < 0) {
+        this.bounces++;
+        this.x = 0;
+        this.dx = this.dx * -0.9;
+    }
   };
   
   function redraw() {
