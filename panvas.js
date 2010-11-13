@@ -61,7 +61,6 @@
   };
   
   function redraw() {
-    simulate();
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);  
     for(var i=0; i < scene.length; i++) {
       scene[i].draw(ctx);
