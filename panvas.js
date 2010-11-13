@@ -82,7 +82,7 @@
     originX = ~~(canvasWidth * 0.5);
     originY = ~~(canvasHeight * 0.25);
     
-    ctx = panvas.getContext('2d');
+    ctx = canvas.getContext('2d');
     ctx.fillStyle = '#036';
     
     setInterval(spawn, 100);
