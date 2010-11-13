@@ -1,7 +1,8 @@
 (function(window, undefined) {
   
-  var G = -400, // px/sec^2
-      maxParticles = 500;
+  var g = -400, // px/sec^2
+      maxParticles = 200,
+      coefficientOfRestitution = 0.75;
   
   var document = window.document,
       ctx,
@@ -31,32 +32,34 @@
   };
   
   Particle.prototype.advanceSimulationBy = function(interval) {
+    
     var intervalSecs = interval / 1000,
-        dG = G * intervalSecs,
+        dg = g * intervalSecs,
         dx = this.dx * intervalSecs,
         dy = this.dy * intervalSecs;
-    this.dy -= dG;
+    
+    this.dy -= dg;
     this.x += dx;
     this.y += dy;
     
     if (this.y > canvasHeight) {
         this.bounces++;
         this.y = canvasHeight;
-        this.dy = this.dy * -0.9;
+        this.dy = -1 * this.dy * coefficientOfRestitution;
     } else if (this.y < 0) {
         this.bounces++;
         this.y = 0;
-        this.dy = this.dy * -0.9;
+        this.dy = -1 * this.dy * coefficientOfRestitution;
     }
     
     if (this.x > canvasWidth) {
         this.bounces++;
         this.x = canvasWidth;
-        this.dx = this.dx * -0.9;
+        this.dx = -1 * this.dx * coefficientOfRestitution;
     } else if (this.x < 0) {
         this.bounces++;
         this.x = 0;
-        this.dx = this.dx * -0.9;
+        this.dx = -1 * this.dx * coefficientOfRestitution;
     }
   };
   
@@ -108,7 +111,7 @@
     setInterval(spawn, 100);
     
     lastSim = new Date();
-    setInterval(advance, 10);
+    setInterval(advance, 0);
     
   };
   
