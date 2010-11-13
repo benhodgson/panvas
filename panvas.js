@@ -1,8 +1,9 @@
 (function(window, undefined) {
   
-  var g = -400, // px/sec^2
+  var g = -500, // px/sec^2
       maxParticles = 200,
-      coefficientOfRestitution = 0.75;
+      coefficientOfRestitution = 0.75,
+      colours = ['#900', '#090', '#009', '#099', '#909', '#990'];
   
   var document = window.document,
       ctx,
@@ -17,6 +18,7 @@
   
   function Particle(radius) {
     this.radius = radius;
+    this.colour = "#000";
     this.x = originX;
     this.y = originY;
     this.dx = 0; // pixels per second
@@ -26,6 +28,7 @@
   
   Particle.prototype.draw = function(ctx) {
     ctx.beginPath();
+    ctx.fillStyle = this.colour;
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, true); 
     ctx.closePath();
     ctx.fill();
@@ -81,10 +84,19 @@
     lastSim = now;
   };
   
+  var cycleColour = (function(colours) {
+    var colourIndex = -1;
+    return function() {
+      colourIndex = (colourIndex + 1) % colours.length;
+      return colours[colourIndex];
+    };
+  })(colours);
+  
   function spawn() {
     var p = new Particle(2);
     p.dx = (Math.random() -0.5) * 300;
     p.dy = Math.random() * -300;
+    p.colour = cycleColour();
     scene[idx] = p;
     idx = (idx + 1) % maxParticles;
   };
@@ -106,7 +118,6 @@
     originY = ~~(canvasHeight * 0.25);
     
     ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#036';
     
     setInterval(spawn, 100);
     
