@@ -8,6 +8,7 @@
   var document = window.document,
       ctx,
       canvas,
+      mouseBall,
       canvasWidth,
       canvasHeight,
       originX,
@@ -24,6 +25,7 @@
     this.dx = 0; // pixels per second
     this.dy = 0; // pixels per second
     this.bounces = 0;
+    this.simulate = true;
   };
   
   Particle.prototype.draw = function(ctx) {
@@ -41,29 +43,40 @@
         dx = this.dx * intervalSecs,
         dy = this.dy * intervalSecs;
     
-    this.dy -= dg;
-    this.x += dx;
-    this.y += dy;
-    
-    if (this.y > canvasHeight) {
-        this.bounces++;
-        this.y = canvasHeight;
+    if(this.simulate) {
+      this.dy -= dg;
+      this.x += dx;
+      this.y += dy;
+      
+      var distanceFromMouseBall = Math.sqrt(Math.pow(this.x - mouseBall.x, 2)
+        + Math.pow(this.y - mouseBall.y, 2));
+      
+      if(this != mouseBall && distanceFromMouseBall <= this.radius + mouseBall.radius) {
         this.dy = -1 * this.dy * coefficientOfRestitution;
-    } else if (this.y < 0) {
-        this.bounces++;
-        this.y = 0;
-        this.dy = -1 * this.dy * coefficientOfRestitution;
+        this.dx = -1 * this.dx * coefficientOfRestitution;
+      } else {
+        if(this.y + this.radius > canvasHeight) {
+            this.bounces++;
+            this.y = canvasHeight - this.radius;
+            this.dy = -1 * this.dy * coefficientOfRestitution;
+        } else if(this.y - this.radius < 0) {
+            this.bounces++;
+            this.y = 0 + this.radius;
+            this.dy = -1 * this.dy * coefficientOfRestitution;
+        }
+
+        if(this.x + this.radius > canvasWidth) {
+            this.bounces++;
+            this.x = canvasWidth - this.radius;
+            this.dx = -1 * this.dx * coefficientOfRestitution;
+        } else if(this.x - this.radius< 0) {
+            this.bounces++;
+            this.x = 0 + this.radius;
+            this.dx = -1 * this.dx * coefficientOfRestitution;
+        }
+      }
     }
     
-    if (this.x > canvasWidth) {
-        this.bounces++;
-        this.x = canvasWidth;
-        this.dx = -1 * this.dx * coefficientOfRestitution;
-    } else if (this.x < 0) {
-        this.bounces++;
-        this.x = 0;
-        this.dx = -1 * this.dx * coefficientOfRestitution;
-    }
   };
   
   function redraw() {
@@ -71,6 +84,7 @@
     for(var i=0; i < scene.length; i++) {
       scene[i].draw(ctx);
     }
+    mouseBall.draw(ctx);
   };
   
   function simulate() {
@@ -80,6 +94,7 @@
     for(var i=0; i < scene.length; i++) {
       scene[i].advanceSimulationBy(interval);
     }
+    mouseBall.advanceSimulationBy(interval);
     
     lastSim = now;
   };
@@ -106,7 +121,7 @@
     redraw();
   };
   
-  function init() {
+  $(function() {
     
     canvas = document.getElementById('panvas');
     canvasWidth = canvas.clientWidth;
@@ -119,13 +134,30 @@
     
     ctx = canvas.getContext('2d');
     
-    setInterval(spawn, 100);
+    mouseBall = new Particle(25);
+    mouseBall.x = 100;
+    mouseBall.y = 100;
+    mouseBall.dx = -250;
+    mouseBall.dy = -500;
+    
+    $(canvas).mouseenter(function() {
+      mouseBall.simulate = false;
+    });
+    
+    $(canvas).mouseleave(function() {
+      mouseBall.simulate = true;
+    });
+    
+    canvas.addEventListener('mousemove', function(e) {
+      mouseBall.x = e.offsetX;
+      mouseBall.y = e.offsetY;
+    }, true);
     
     lastSim = new Date();
     setInterval(advance, 0);
     
-  };
-  
-  document.addEventListener('DOMContentLoaded', init, true);
+    setInterval(spawn, 100);
+    
+  });
   
 })(window);
