@@ -16,6 +16,7 @@ footer {
     font-style: italic;
     font-family: "Georgia", serif;
     margin: 10px 0;
+    line-height: 1.5;
 }
 
 footer a {
