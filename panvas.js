@@ -10,7 +10,7 @@
   
   var document = window.document,
       TWO_PI = Math.PI * 2, // rads
-      rotationFrequency = rotationPeriod ? 0 : (TWO_PI / rotationPeriod),
+      rotationFrequency = rotationPeriod ? (TWO_PI / rotationPeriod) : 0,
       ctx,
       canvas,
       canvasWidth,
@@ -82,6 +82,8 @@
       canvas.style['MozTransform'] = 'rotate('+thisWayUp+'rad)';
       canvas.style['OTransform'] = 'rotate('+thisWayUp+'rad)';
     }
+    
+    (new Particle()).draw(ctx);
     
   };
   
