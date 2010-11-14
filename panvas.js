@@ -10,7 +10,7 @@
   
   var document = window.document,
       TWO_PI = Math.PI * 2, // rads
-      rotationFrequency = TWO_PI / rotationPeriod, // rads/sec
+      rotationFrequency = rotationPeriod ? 0 : (TWO_PI / rotationPeriod),
       ctx,
       canvas,
       canvasWidth,
@@ -62,7 +62,7 @@
     if(this.x + this.radius > canvasWidth) {
         this.x = canvasWidth - this.radius;
         this.dx = -1 * this.dx * coefficientOfRestitution;
-    } else if(this.x - this.radius< 0) {
+    } else if(this.x - this.radius < 0) {
         this.x = 0 + this.radius;
         this.dx = -1 * this.dx * coefficientOfRestitution;
     }
@@ -77,9 +77,11 @@
     }
     
     // Rotate the canvas so as to oppose the gravity delta
-    canvas.style['WebkitTransform'] = 'rotate('+thisWayUp+'rad)';
-    canvas.style['MozTransform'] = 'rotate('+thisWayUp+'rad)';
-    canvas.style['OTransform'] = 'rotate('+thisWayUp+'rad)';
+    if(rotationFrequency > 0) {
+      canvas.style['WebkitTransform'] = 'rotate('+thisWayUp+'rad)';
+      canvas.style['MozTransform'] = 'rotate('+thisWayUp+'rad)';
+      canvas.style['OTransform'] = 'rotate('+thisWayUp+'rad)';
+    }
     
   };
   
