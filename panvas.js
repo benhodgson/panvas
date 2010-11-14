@@ -19,7 +19,6 @@
       originY,
       lastSim,
       scene = [],
-      idx = 0,
       gx = 0,
       gy = 0,
       
@@ -103,10 +102,10 @@
   };
   
   function cycle(array) {
-    var idx = -1;
+    var i = -1;
     return function() {
-      idx = (idx + 1) % array.length;
-      return array[idx];
+      i = (i + 1) % array.length;
+      return array[i];
     };
   };
   
@@ -118,8 +117,10 @@
     p.dx = (Math.random() -0.5) * maxInitialComponentVelocity;
     p.dy = (Math.random() -0.5) * maxInitialComponentVelocity;
     p.fill = cycleColour();
-    scene[idx] = p;
-    idx = (idx + 1) % maxParticles;
+    scene.push(p);
+    if(scene.length > maxParticles) {
+      scene.shift();
+    }
   };
   
   function advance() {
