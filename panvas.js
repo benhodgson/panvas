@@ -27,8 +27,8 @@
       thisWayUp = 0, // rads
       thisWayDown = thisWayUp + Math.PI; // rads
   
-  function Particle(radius) {
-    this.radius = radius;
+  function Particle() {
+    this.radius = 2;
     this.fill = "#000";
     this.x = originX;
     this.y = originY;
@@ -84,6 +84,7 @@
   };
   
   function simulate() {
+    
     var now = new Date(),
         interval = (now - lastSim) / 1000;
     
@@ -99,6 +100,7 @@
     }
     
     lastSim = now;
+    
   };
   
   function cycle(array) {
@@ -109,42 +111,53 @@
     };
   };
   
-  var cycleColour = cycle(colours),
-      cycleSize = cycle(sizes);
-  
-  function spawn() {
-    var p = new Particle(cycleSize());
-    p.dx = (Math.random() -0.5) * maxInitialComponentVelocity;
-    p.dy = (Math.random() -0.5) * maxInitialComponentVelocity;
-    p.fill = cycleColour();
-    scene.push(p);
-    if(scene.length > maxParticles) {
-      scene.shift();
-    }
-  };
-  
-  function advance() {
-    simulate();
-    redraw();
-  };
-  
+  // on DOM ready
   $(function() {
     
+    var cycleColour = cycle(colours),
+        cycleSize = cycle(sizes);
+    
     canvas = document.getElementById('panvas');
+    ctx = canvas.getContext('2d');
     canvasWidth = canvas.clientWidth;
     canvasHeight = canvas.clientHeight;
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    
     originX = ~~(canvasWidth * 0.5);
     originY = ~~(canvasHeight * 0.5);
     
-    ctx = canvas.getContext('2d');
     
     lastSim = new Date();
-    setInterval(advance, 0);
     
-    setInterval(spawn, 100);
+    // Start the simulate/redraw loop
+    (function loop() {
+      simulate();
+      redraw();
+      setTimeout(loop, 0);
+    })();
+    
+    // Spawn a new particle every 100ms
+    (function spawn() {
+      
+      // Make a new particle
+      var p = new Particle();
+      p.fill = cycleColour();
+      p.radius = cycleSize();
+      p.dx = (Math.random() - 0.5) * maxInitialComponentVelocity;
+      p.dy = (Math.random() - 0.5) * maxInitialComponentVelocity;
+      
+      // Add it to the scene
+      scene.push(p);
+      
+      // Do it again in 100ms
+      setTimeout(spawn, 100);
+      
+      // Limit the scene size
+      if(scene.length > maxParticles) {
+        scene.shift();
+      }
+      
+    })();
     
   });
   
